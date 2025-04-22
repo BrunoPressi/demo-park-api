@@ -1,4 +1,4 @@
-package com.compass.demo_park_api.entities.enums;
+package com.compass.demo_park_api.entity.enums;
 
 public enum Role {
 

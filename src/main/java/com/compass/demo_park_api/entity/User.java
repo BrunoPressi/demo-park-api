@@ -1,6 +1,6 @@
-package com.compass.demo_park_api.entities;
+package com.compass.demo_park_api.entity;
 
-import com.compass.demo_park_api.entities.enums.Role;
+import com.compass.demo_park_api.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
