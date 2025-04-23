@@ -3,7 +3,6 @@ package com.compass.demo_park_api.service;
 import com.compass.demo_park_api.entity.User;
 import com.compass.demo_park_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +25,13 @@ public class UserService {
         return user.orElseThrow(
                 () -> new RuntimeException("User not found!")
         );
+    }
+
+    @Transactional()
+    public User updatePassword(Long id, String password) {
+        User user = findById(id);
+        user.setPassword(password);
+        return user;
     }
 
 }

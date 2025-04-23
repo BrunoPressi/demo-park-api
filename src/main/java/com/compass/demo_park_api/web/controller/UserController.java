@@ -3,9 +3,7 @@ package com.compass.demo_park_api.web.controller;
 import com.compass.demo_park_api.entity.User;
 import com.compass.demo_park_api.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +23,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id) {
         User user = userService.findById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<User> updatePassword(@PathVariable Long id, @RequestBody User obj) {
+        User user = userService.updatePassword(id, obj.getPassword());
         return ResponseEntity.ok(user);
     }
 
