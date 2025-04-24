@@ -6,6 +6,7 @@ import com.compass.demo_park_api.web.dto.UserCreateDto;
 import com.compass.demo_park_api.web.dto.UserPasswordDto;
 import com.compass.demo_park_api.web.dto.UserResponseDto;
 import com.compass.demo_park_api.web.dto.mapper.UserMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> create(@RequestBody UserCreateDto createDto) {
+    public ResponseEntity<UserResponseDto> create(@RequestBody @Valid UserCreateDto createDto) {
         User user = userService.save(UserMapper.toUser(createDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(user));
     }
@@ -41,9 +42,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/password")
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody UserPasswordDto passwordDto) {
-        User user = userService.updatePassword(id, passwordDto.getCurrentPassword(), passwordDto.getNewPassword(), passwordDto.getConfirmPassword());
-        UserResponseDto userDto = UserMapper.toDto(user);
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody @Valid UserPasswordDto passwordDto) {
+        userService.updatePassword(id, passwordDto.getCurrentPassword(), passwordDto.getNewPassword(), passwordDto.getConfirmPassword());
         return ResponseEntity.noContent().build();
     }
 
