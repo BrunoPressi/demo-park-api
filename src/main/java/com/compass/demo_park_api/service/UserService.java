@@ -1,8 +1,12 @@
 package com.compass.demo_park_api.service;
 
 import com.compass.demo_park_api.entity.User;
+import com.compass.demo_park_api.exception.PasswordInvalidException;
+import com.compass.demo_park_api.exception.UserNotFoundException;
+import com.compass.demo_park_api.exception.UsernameUniqueViolationException;
 import com.compass.demo_park_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,32 +21,36 @@ public class UserService {
 
     @Transactional()
     public User save(User user) {
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new UsernameUniqueViolationException(String.format("User %s already exists", user.getUsername()));
+        }
     }
 
     @Transactional(readOnly = true)
     public User findById(Long id) {
         Optional<User> user =  userRepository.findById(id);
         return user.orElseThrow(
-                () -> new RuntimeException("User not found!")
+                () -> new UserNotFoundException(String.format("User id = %d not found", id))
         );
     }
 
     @Transactional()
-    public User updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
+    public void updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
 
         if (!newPassword.equals(confirmPassword)) {
-            throw new RuntimeException("Passwords are different");
+            throw new PasswordInvalidException("Passwords are different");
         }
 
         User user = findById(id);
 
         if (!currentPassword.equals(user.getPassword())) {
-            throw new RuntimeException("Incorrect password");
+            throw new PasswordInvalidException("Incorrect password");
         }
 
         user.setPassword(newPassword);
-        return user;
     }
 
     @Transactional(readOnly = true)
