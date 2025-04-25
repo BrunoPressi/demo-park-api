@@ -1,6 +1,7 @@
 package com.compass.demo_park_api.service;
 
 import com.compass.demo_park_api.entity.User;
+import com.compass.demo_park_api.entity.enums.Role;
 import com.compass.demo_park_api.exception.PasswordInvalidException;
 import com.compass.demo_park_api.exception.UserNotFoundException;
 import com.compass.demo_park_api.exception.UsernameUniqueViolationException;
@@ -10,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +60,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public Role findRoleByUsername(String username) {
+        return userRepository.findRoleByUsername(username);
+    }
 }
