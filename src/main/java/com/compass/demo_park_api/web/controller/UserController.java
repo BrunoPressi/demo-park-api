@@ -63,8 +63,7 @@ public class UserController {
     @Operation(summary = "Find all users", description = "Resource to find all users",
         responses = {
                 @ApiResponse(responseCode = "200", description = "List with all users",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
+                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
         }
     )
     @GetMapping
