@@ -122,4 +122,21 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
     }
 
+    @Test
+    public void createUser_duplicateUsername_returnErrorMessageWithStatus409() {
+        ErrorMessage responseBody = testClient
+                .post()
+                .uri("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserCreateDto("jose@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(409)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+
+    }
+    
 }
