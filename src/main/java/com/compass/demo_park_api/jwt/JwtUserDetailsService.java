@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new JwtUserDetails(user);
     }
 
+    @PostMapping("/auth")
     public JwtToken getTokenAuthenticated(String username) {
         Role role = userService.findRoleByUsername(username);
         return JwtUtils.createToken(username, role.name().substring("ROLE_".length()));
