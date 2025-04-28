@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,7 @@ public class AuthController {
     private final JwtUserDetailsService userDetailsService;
     private final AuthenticationManager authManager;
 
+    @PostMapping("/auth")
     public ResponseEntity<?> authenticate(@RequestBody @Valid UserLoginDto user, HttpServletRequest request) {
 
         log.info("Authenticate process {}", user.getUsername());

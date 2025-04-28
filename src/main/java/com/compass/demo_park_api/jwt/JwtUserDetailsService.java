@@ -22,7 +22,6 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new JwtUserDetails(user);
     }
 
-    @PostMapping("/auth")
     public JwtToken getTokenAuthenticated(String username) {
         Role role = userService.findRoleByUsername(username);
         return JwtUtils.createToken(username, role.name().substring("ROLE_".length()));
