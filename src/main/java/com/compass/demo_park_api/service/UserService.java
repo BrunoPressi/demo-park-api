@@ -8,6 +8,8 @@ import com.compass.demo_park_api.exception.UsernameUniqueViolationException;
 import com.compass.demo_park_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +22,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional()
     public User save(User user) {
         try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         }
         catch (DataIntegrityViolationException e) {
@@ -48,11 +52,11 @@ public class UserService {
 
         User user = findById(id);
 
-        if (!currentPassword.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword,user.getPassword())) {
             throw new PasswordInvalidException("Incorrect password");
         }
 
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional(readOnly = true)

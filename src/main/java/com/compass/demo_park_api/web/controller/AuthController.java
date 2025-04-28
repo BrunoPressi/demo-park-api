@@ -4,7 +4,6 @@ import com.compass.demo_park_api.jwt.JwtToken;
 import com.compass.demo_park_api.jwt.JwtUserDetailsService;
 import com.compass.demo_park_api.web.dto.UserLoginDto;
 import com.compass.demo_park_api.web.exception.ErrorMessage;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +14,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
 @RestController
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final JwtUserDetailsService userDetailsService;
     private final AuthenticationManager authManager;
 
-    @PostMapping("/auth")
+    @PostMapping()
     public ResponseEntity<?> authenticate(@RequestBody @Valid UserLoginDto user, HttpServletRequest request) {
 
         log.info("Authenticate process {}", user.getUsername());
