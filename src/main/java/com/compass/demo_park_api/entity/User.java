@@ -3,6 +3,11 @@ package com.compass.demo_park_api.entity;
 import com.compass.demo_park_api.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,6 +16,7 @@ import java.util.Objects;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User implements Serializable {
 
     @Id
@@ -29,15 +35,19 @@ public class User implements Serializable {
     private Role role = Role.ROLE_CLIENT;
 
     @Column(name = "date_creation")
+    @CreatedDate
     private LocalDateTime dateCreation;
 
     @Column(name = "date_modify")
+    @LastModifiedDate
     private LocalDateTime dateModify;
 
     @Column(name = "create_by")
+    @CreatedBy
     private String createBy;
 
     @Column(name = "modify_by")
+    @LastModifiedBy
     private String modifyBy;
 
     @Override
