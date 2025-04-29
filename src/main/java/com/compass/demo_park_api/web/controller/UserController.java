@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +47,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(user));
     }
 
-    @Operation(summary = "Find user by id", description = "Resource to find a user by id",
-        responses = {
+    @Operation(summary = "Find user by id", description = "Request requires a Bearer Token, access restricted to ADMIN|CLIENT",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
             @ApiResponse(responseCode = "204", description = "User found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access Denied",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
     )
@@ -62,10 +66,13 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @Operation(summary = "Find all users", description = "Resource to find all users",
+    @Operation(summary = "Find all users", description = "Request requires a Bearer Token, access restricted to ADMIN",
+        security = @SecurityRequirement(name = "security"),
         responses = {
                 @ApiResponse(responseCode = "200", description = "List with all users",
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
+                @ApiResponse(responseCode = "403", description = "Access Denied",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
     )
     @GetMapping
@@ -76,8 +83,9 @@ public class UserController {
         return ResponseEntity.ok(usersDto);
     }
 
-    @Operation(summary = "Update user password", description = "Resource to update user password",
-        responses = {
+    @Operation(summary = "Update user password", description = "Request requires a Bearer Token, access restricted to ADMIN|CLIENT",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
             @ApiResponse(responseCode = "204", description = "Password changed successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))),
             @ApiResponse(responseCode = "400", description = "Incorret password(s)",
@@ -85,6 +93,8 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Invalid input data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "404", description = "User not found",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access Denied",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
     )
