@@ -87,7 +87,7 @@ public class UserController {
             security = @SecurityRequirement(name = "security"),
             responses = {
             @ApiResponse(responseCode = "204", description = "Password changed successfully"),
-            @ApiResponse(responseCode = "400", description = "Incorret password(s)",
+            @ApiResponse(responseCode = "400", description = "Incorrect password(s)",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "422", description = "Invalid input data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
