@@ -1,5 +1,6 @@
 package com.compass.demo_park_api.config;
 
+import com.compass.demo_park_api.jwt.JwtAuthenticationEntryPoint;
 import com.compass.demo_park_api.jwt.JwtAuthorizationFilter;
 import com.compass.demo_park_api.jwt.JwtUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,9 @@ public class SpringSecurityConfig {
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ).addFilterBefore(
                         jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
-                )
+                ).exceptionHandling( ex -> {
+                    ex.authenticationEntryPoint((new JwtAuthenticationEntryPoint()));
+                })
                 .build();
     }
 
