@@ -86,14 +86,11 @@ public class UserController {
     @Operation(summary = "Update user password", description = "Request requires a Bearer Token, access restricted to ADMIN|CLIENT",
             security = @SecurityRequirement(name = "security"),
             responses = {
-            @ApiResponse(responseCode = "204", description = "Password changed successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "204", description = "Password changed successfully"),
             @ApiResponse(responseCode = "400", description = "Incorret password(s)",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "422", description = "Invalid input data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "404", description = "User not found",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "403", description = "Access Denied",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
