@@ -38,9 +38,19 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, e.getMessage()));
     }
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
+    @ExceptionHandler(UsernameUniqueViolationException.class)
     public ResponseEntity<ErrorMessage> usernameUniqueViolationException(HttpServletRequest request,
                                                                         UsernameUniqueViolationException e) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT,  e.getMessage()));
+    }
+
+    @ExceptionHandler(CpfUniqueViolationException.class)
+    public ResponseEntity<ErrorMessage> cpfUniqueViolationException(HttpServletRequest request,
+                                                                    CpfUniqueViolationException e) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

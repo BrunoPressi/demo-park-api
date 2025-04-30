@@ -17,6 +17,6 @@ public class CustomerCreateDto {
 
     @NotBlank(message = "Name cannot be empty")
     @Size(min = 5, max = 100, message = "Size must be between 5 and 100")
-    private String nome;
+    private String name;
 
 }

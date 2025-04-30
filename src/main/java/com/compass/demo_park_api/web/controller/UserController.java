@@ -59,7 +59,7 @@ public class UserController {
         }
     )
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') OR ( hasRole('CLIENT') AND #id == authentication.principal.id)")
+    @PreAuthorize("hasRole('ADMIN') OR ( hasRole('CUSTOMER') AND #id == authentication.principal.id)")
     public ResponseEntity<UserResponseDto> findById(@PathVariable Long id) {
         User user = userService.findById(id);
         UserResponseDto userDto = UserMapper.toDto(user);
@@ -96,7 +96,7 @@ public class UserController {
         }
     )
     @PatchMapping("/{id}/password")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody @Valid UserPasswordDto passwordDto) {
         userService.updatePassword(id, passwordDto.getCurrentPassword(), passwordDto.getNewPassword(), passwordDto.getConfirmPassword());
         return ResponseEntity.noContent().build();

@@ -15,9 +15,9 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     @Transactional
-    public Customer createCustomer(Customer customer) {
+    public void createCustomer(Customer customer) {
         try {
-            return customerRepository.save(customer);
+            customerRepository.save(customer);
         }
         catch (DataIntegrityViolationException e) {
             throw new CpfUniqueViolationException(String.format("Customer %s already exists", customer.getName()));

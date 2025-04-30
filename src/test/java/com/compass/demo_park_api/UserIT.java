@@ -1,6 +1,5 @@
 package com.compass.demo_park_api;
 
-import com.compass.demo_park_api.entity.User;
 import com.compass.demo_park_api.web.dto.UserCreateDto;
 import com.compass.demo_park_api.web.dto.UserPasswordDto;
 import com.compass.demo_park_api.web.dto.UserResponseDto;
@@ -37,7 +36,7 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("tody@gmail.com");
-        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENT");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CUSTOMER");
 
     }
 
@@ -170,7 +169,7 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(101);
         org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("jim@gmail.com");
-        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENT");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CUSTOMER");
 
         responseBody = testClient
                 .get()
@@ -184,7 +183,7 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(102);
         org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("pen@gmail.com");
-        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENT");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CUSTOMER");
 
     }
 
