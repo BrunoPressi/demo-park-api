@@ -1,8 +1,10 @@
 package com.compass.demo_park_api.entity;
 
-import com.compass.demo_park_api.entity.enums.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -13,26 +15,22 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@Entity
-@Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class User implements Serializable {
+@Entity
+@Table(name = "customers")
+public class Customer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 100)
-    private String username;
+    @Column(name = "CPF", unique = true, nullable = false, length = 11)
+    private String cpf;
 
-    @Column(name = "password", nullable = false, unique = false, length = 200)
-    private String password;
-
-    @Column(name = "role", nullable = false, length = 25)
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.ROLE_CUSTOMER;
+    @Column(nullable = false, length = 100)
+    private String name;
 
     @Column(name = "date_creation")
     @CreatedDate
@@ -50,14 +48,15 @@ public class User implements Serializable {
     @LastModifiedBy
     private String modifyBy;
 
-    @OneToOne(mappedBy = "user")
-    private Customer customer;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
+        Customer customer = (Customer) o;
+        return id == customer.id;
     }
 
     @Override
@@ -67,7 +66,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Customer{" +
                 "id=" + id +
                 '}';
     }
