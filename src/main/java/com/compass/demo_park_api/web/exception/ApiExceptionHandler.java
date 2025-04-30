@@ -1,5 +1,6 @@
 package com.compass.demo_park_api.web.exception;
 
+import com.compass.demo_park_api.exception.CpfUniqueViolationException;
 import com.compass.demo_park_api.exception.PasswordInvalidException;
 import com.compass.demo_park_api.exception.UserNotFoundException;
 import com.compass.demo_park_api.exception.UsernameUniqueViolationException;
@@ -37,7 +38,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, e.getMessage()));
     }
 
-    @ExceptionHandler(UsernameUniqueViolationException.class)
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> usernameUniqueViolationException(HttpServletRequest request,
                                                                         UsernameUniqueViolationException e) {
 
