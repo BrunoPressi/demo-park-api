@@ -13,16 +13,20 @@ import com.compass.demo_park_api.web.dto.mapper.CustomerMapper;
 import com.compass.demo_park_api.web.dto.mapper.PageableMapper;
 import com.compass.demo_park_api.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,6 +45,7 @@ public class CustomerController {
 
     @Operation(summary = "Create new customer", description = "Resource to create a new customer linked to a registered user. " +
             "Request requires the use of a Bearer Token. Access restricted to Role='CUSTOMER'",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Customer created successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
@@ -68,6 +73,7 @@ public class CustomerController {
 
     @Operation(summary = "Find a customer by id", description = "Resource to find a client by ID. " +
             "Request requires the use of a bearer token. Access restricted to Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                 @ApiResponse(responseCode = "200", description = "Customer found successfully",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerResponseDto.class))),
@@ -88,15 +94,28 @@ public class CustomerController {
 
     @Operation(summary = "Find All Customers", description = "Resource to find all customers." +
             "Request requires the use of a Bearer Token. Access restricted to Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
+            parameters = {
+                @Parameter(in = ParameterIn.QUERY, name = "page",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "0")),
+                        description = "Represents the returned page"),
+                @Parameter(in = ParameterIn.QUERY, name = "size",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "20")),
+                        description = "Represents the total number of elements per page"),
+                @Parameter(in = ParameterIn.QUERY, name = "sort", hidden = true,
+                        content = @Content(schema = @Schema(type = "string", defaultValue = "id,asc")),
+                        description = "Represents the ordering of the results")
+            },
             responses = {
                 @ApiResponse(responseCode = "200", description = "Success",
                         content =  @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerResponseDto.class)))),
                 @ApiResponse(responseCode = "403", description = "Resource not allowed for CUSTOMER profile",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageableDto> findAllCustomers(Pageable pageable) {
+    public ResponseEntity<PageableDto> findAllCustomers(@Parameter(hidden = true)
+                                                @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable) {
         Page<CustomerProjection> customersList = customerService.findAllCustomers(pageable);
 
         return ResponseEntity.ok().body(PageableMapper.toDto(customersList));
