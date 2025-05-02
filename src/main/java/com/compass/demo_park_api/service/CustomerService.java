@@ -28,9 +28,9 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public Customer findById(Long id) {
-        return customerRepository.findById(id).orElseThrow(() -> {
-             throw new CustomerNotFoundException("Customer not found");
-        });
+        return customerRepository.findById(id).orElseThrow(
+                () -> new CustomerNotFoundException(String.format("Customer id=%s not found", id))
+        );
     }
 
 }

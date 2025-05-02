@@ -1,5 +1,6 @@
 package com.compass.demo_park_api;
 
+import com.compass.demo_park_api.entity.Customer;
 import com.compass.demo_park_api.web.dto.CustomerCreateDto;
 import com.compass.demo_park_api.web.dto.CustomerResponseDto;
 import com.compass.demo_park_api.web.exception.ErrorMessage;
@@ -18,7 +19,7 @@ public class CustomerIT {
     private WebTestClient testClient;
 
     @Test
-    public void createCustomer_ValidData_returnStatus201() {
+    public void createCustomer_ValidData_returnCustomerResponseDtoWithStatus201() {
 
         CustomerResponseDto responseBody = testClient
                 .post()
@@ -37,7 +38,7 @@ public class CustomerIT {
     }
 
     @Test
-    public void createCustomer_withExistingCustomer_returnWithStatus409() {
+    public void createCustomer_withExistingCustomer_returnErrorMessageWithStatus409() {
 
         ErrorMessage responseBody = testClient
                 .post()
@@ -55,7 +56,7 @@ public class CustomerIT {
     }
 
     @Test
-    public void createCustomer_InvalidData_returnWithStatus422() {
+    public void createCustomer_InvalidData_returnErrorMessageWithStatus422() {
 
         ErrorMessage responseBody = testClient
                 .post()
@@ -73,7 +74,7 @@ public class CustomerIT {
         responseBody = testClient
                 .post()
                 .uri("/api/v1/customers")
-                .bodyValue(new CustomerCreateDto("12345678901", "abc"))
+                .bodyValue(new CustomerCreateDto("12345678901", "abcd"))
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pen@gmail.com", "123456"))
                 .exchange()
                 .expectStatus().isEqualTo(422)
@@ -86,7 +87,7 @@ public class CustomerIT {
         responseBody = testClient
                 .post()
                 .uri("/api/v1/customers")
-                .bodyValue(new CustomerCreateDto("047930260011", "abc"))
+                .bodyValue(new CustomerCreateDto("047.930.260-01", "abc"))
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pen@gmail.com", "123456"))
                 .exchange()
                 .expectStatus().isEqualTo(422)
@@ -99,7 +100,7 @@ public class CustomerIT {
     }
 
     @Test
-    public void createCustomer_AdminUser_returnWithStatus403() {
+    public void createCustomer_AdminUser_returnErrorMessageWithStatus403() {
 
         ErrorMessage responseBody = testClient
                 .post()
@@ -114,4 +115,56 @@ public class CustomerIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
+
+    @Test
+    public void findCustomerById_validIdByAdmin_returnCustomerResponseDtoWithStatus200() {
+
+        CustomerResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/customers/203")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "jose@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CustomerResponseDto.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(203);
+
+    }
+
+    @Test
+    public void findCustomerById_invalidIdByAdmin_returnErrorMessageWithStatus404() {
+
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/customers/0")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "jose@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+
+    }
+
+    @Test
+    public void findCustomerById_validIdByCustomer_returnErrorMessageWithStatus403() {
+
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("api/v1/customers/203")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pen@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+
+    }
+
 }
