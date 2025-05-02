@@ -1,9 +1,6 @@
 package com.compass.demo_park_api.web.exception;
 
-import com.compass.demo_park_api.exception.CpfUniqueViolationException;
-import com.compass.demo_park_api.exception.PasswordInvalidException;
-import com.compass.demo_park_api.exception.UserNotFoundException;
-import com.compass.demo_park_api.exception.UsernameUniqueViolationException;
+import com.compass.demo_park_api.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -66,6 +63,16 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND,  e.getMessage()));
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ErrorMessage> customerNotFoundException(HttpServletRequest request,
+                                                                  CustomerNotFoundException e) {
+
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(PasswordInvalidException.class)

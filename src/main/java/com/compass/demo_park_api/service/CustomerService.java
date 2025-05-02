@@ -3,6 +3,7 @@ package com.compass.demo_park_api.service;
 import com.compass.demo_park_api.entity.Customer;
 import com.compass.demo_park_api.exception.CpfUniqueViolationException;
 import com.compass.demo_park_api.repository.CustomerRepository;
+import com.compass.demo_park_api.exception.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,13 @@ public class CustomerService {
             throw new CpfUniqueViolationException(String.format("Customer %s already exists", customer.getName()));
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public Customer findById(Long id) {
+        return customerRepository.findById(id).orElseThrow(() -> {
+             throw new CustomerNotFoundException("Customer not found");
+        });
     }
 
 }
