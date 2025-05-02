@@ -1,6 +1,7 @@
 package com.compass.demo_park_api.entity;
 
 import com.compass.demo_park_api.entity.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -50,6 +51,7 @@ public class User implements Serializable {
     @LastModifiedBy
     private String modifyBy;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user")
     private Customer customer;
 

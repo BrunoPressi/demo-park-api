@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/customers/customers-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/sql/customers/customers-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -165,6 +167,38 @@ public class CustomerIT {
             org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
             org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
 
+    }
+
+    @Test
+    public void findAllCustomers_withAdminProfile_returnListCustomerResponseDtoWithStatus200() {
+
+        List<CustomerResponseDto> responseBody = testClient
+                .get()
+                .uri("/api/v1/customers")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "jose@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(CustomerResponseDto.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody).size().isEqualTo(1);
+    }
+
+    @Test
+    public void findAllCustomers_withCustomerProfile_returnErrorMessageWithStatus403() {
+
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/customers")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pen@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
 }
