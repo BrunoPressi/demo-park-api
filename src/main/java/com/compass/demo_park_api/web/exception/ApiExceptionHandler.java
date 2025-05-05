@@ -55,6 +55,17 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT,  e.getMessage()));
     }
 
+    @ExceptionHandler(CodeUniqueViolationException.class)
+    public ResponseEntity<ErrorMessage> codeUniqueViolationException(HttpServletRequest request,
+                                                                     CodeUniqueViolationException e) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
+
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorMessage> userNotFoundException(HttpServletRequest request,
                                                               UserNotFoundException e) {
@@ -68,6 +79,16 @@ public class ApiExceptionHandler {
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<ErrorMessage> customerNotFoundException(HttpServletRequest request,
                                                                   CustomerNotFoundException e) {
+
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler(CodeNotFoundException.class)
+    public ResponseEntity<ErrorMessage> codeNotFoundException(HttpServletRequest request,
+                                                              CodeNotFoundException e) {
 
         return  ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
