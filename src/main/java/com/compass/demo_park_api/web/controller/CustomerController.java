@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -119,6 +120,25 @@ public class CustomerController {
         Page<CustomerProjection> customersList = customerService.findAllCustomers(pageable);
 
         return ResponseEntity.ok().body(PageableMapper.toDto(customersList));
+    }
+
+    @Operation(summary = "Customer details", description = "Resource to get customer details." +
+            "Request requires the use of a Bearer Token. Access restricted to Role='CUSTOMER'",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerResponseDto.class))),
+                @ApiResponse(responseCode = "403", description = "Access denied to 'ADMIN' profile",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
+    @GetMapping("/details")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<CustomerResponseDto> getDetails(@AuthenticationPrincipal JwtUserDetails userDetails) {
+        Customer customer = customerService.findByUserId(userDetails.getId());
+        CustomerResponseDto customerResponseDto = CustomerMapper.toDto(customer);
+
+        return ResponseEntity.ok().body(customerResponseDto);
     }
 
 }
