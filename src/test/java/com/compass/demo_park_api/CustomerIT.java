@@ -201,4 +201,41 @@ public class CustomerIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
+    @Test
+    public void getDetails_withAdminProfile_returnErrorMessageWithStatus403() {
+
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/customers/details")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "jose@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+
+
+    }
+
+    @Test
+    public void getDetails_withCustomerProfile_returnCustomerResponseDtoWithStatus200() {
+
+        CustomerResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/customers/details")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pen@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CustomerResponseDto.class)
+                .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getCpf()).isEqualTo("60639545033");
+            org.assertj.core.api.Assertions.assertThat(responseBody.getName()).isEqualTo("Pen Purple");
+            org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(203);
+
+    }
+
 }
