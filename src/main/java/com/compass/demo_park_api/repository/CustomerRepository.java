@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
@@ -16,4 +18,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Page<CustomerProjection> findAllPageable(Pageable pageable);
 
     Customer findByUserId(Long id);
+
+    Optional<Customer> findByCpf(String cpf);
 }

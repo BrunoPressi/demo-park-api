@@ -13,8 +13,8 @@ public class CustomerParkingSpotService {
     private final CustomerParkingSpotRepository customerParkingSpotRepository;
 
     @Transactional
-    public void create(CustomerParkingSpot customerParkingSpot) {
-        customerParkingSpotRepository.save(customerParkingSpot);
+    public CustomerParkingSpot create(CustomerParkingSpot customerParkingSpot) {
+        return customerParkingSpotRepository.save(customerParkingSpot);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.compass.demo_park_api.service;
 
 import com.compass.demo_park_api.entity.Customer;
+import com.compass.demo_park_api.exception.CpfNotFoundException;
 import com.compass.demo_park_api.exception.CpfUniqueViolationException;
 import com.compass.demo_park_api.repository.CustomerRepository;
 import com.compass.demo_park_api.exception.CustomerNotFoundException;
@@ -46,5 +47,11 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Customer findByUserId(Long id) {
         return customerRepository.findByUserId(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Customer findByCpf(String cpf) {
+        return customerRepository.findByCpf(cpf).
+                orElseThrow( () -> new CpfNotFoundException(String.format("CPF %s not found", cpf)));
     }
 }

@@ -86,6 +86,16 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
+    @ExceptionHandler(CpfNotFoundException.class)
+    public ResponseEntity<ErrorMessage> cpfNotFoundException(HttpServletRequest request,
+                                                                  CpfNotFoundException e) {
+
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
     @ExceptionHandler(CodeNotFoundException.class)
     public ResponseEntity<ErrorMessage> codeNotFoundException(HttpServletRequest request,
                                                               CodeNotFoundException e) {

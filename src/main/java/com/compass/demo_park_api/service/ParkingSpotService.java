@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.compass.demo_park_api.entity.enums.ParkingSpotStatus.FREE;
+
 @Service
 @RequiredArgsConstructor
 public class ParkingSpotService {
@@ -37,4 +39,9 @@ public class ParkingSpotService {
 
     }
 
+    @Transactional(readOnly = true)
+    public ParkingSpot findFreeParkingSpot() {
+        return parkingSpotRepository.findFirstByStatus(FREE)
+                .orElseThrow( () -> new CodeNotFoundException("No vacancies found"));
+    }
 }
