@@ -8,6 +8,7 @@ import com.compass.demo_park_api.web.dto.ParkingSpotResponseDto;
 import com.compass.demo_park_api.web.dto.mapper.ParkingSpotMapper;
 import com.compass.demo_park_api.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,11 +40,13 @@ public class ParkingSpotController {
         security = @SecurityRequirement(name = "security"),
         responses = {
             @ApiResponse(responseCode = "201", description = "Created",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ParkingSpotResponseDto.class))),
+                headers = @Header(name = HttpHeaders.LOCATION, description = "URI resource created")),
             @ApiResponse(responseCode = "403", description = "Access denied",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "422", description = "Invalid input data",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "409", description = "Parking Spot already exists",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
     )
     @PostMapping
@@ -62,10 +66,11 @@ public class ParkingSpotController {
 
     @Operation(summary = "Find parking spot by code", description = "Resource to find a parking spot by code." +
             "Request required a Bearer Token. Restricted to ADMIN profile",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                 @ApiResponse(responseCode = "200", description = "Success",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ParkingSpotResponseDto.class))),
-                @ApiResponse(responseCode = "404", description = "Code not found",
+                @ApiResponse(responseCode = "404", description = "Parking Spot not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                 @ApiResponse(responseCode = "403", description = "Access denied",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ParkingSpotResponseDto.class)))
