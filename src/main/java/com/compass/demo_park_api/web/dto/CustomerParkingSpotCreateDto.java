@@ -13,7 +13,7 @@ public class CustomerParkingSpotCreateDto {
 
     @NotBlank(message = "license plate number cannot be empty")
     @Size(min = 8, max = 8)
-    @Pattern(regexp = "[A-Z],{3}-[0-9]{4}", message = "The vehicle license plate must follow the pattern: 'XXX-0000'")
+    @Pattern(regexp = "[A-Z]{3}-[0-9]{4}", message = "The vehicle license plate must follow the pattern: 'XXX-0000'")
     private String licensePlateNumber;
 
     @NotBlank(message = "Car brand cannot be empty")
