@@ -20,3 +20,14 @@ insert into parking_spot (id, code, status) values (203,'A-03', 'FREE');
 insert into parking_spot (id, code, status) values (204,'A-04', 'FREE');
 insert into parking_spot (id, code, status) values (205,'A-05', 'FREE');
 
+insert into customer_parking_spot
+    (id, car_brand, car_color, car_model, entry_date, license_plate_number, number_receipt, customer_id, parking_spot_id)
+        values (500, 'Chevrolet', 'Black',
+                'Vectra 2.0', '2025-05-07 13:11:00',
+                'FIT-1020', '20250507-131100', '203', '201');
+
+insert into customer_parking_spot
+(id, car_brand, car_color, car_model, entry_date, exit_date, license_plate_number, number_receipt, customer_id, parking_spot_id)
+values (501, 'Chevrolet', 'Black',
+        'Vectra 2.0', '2025-05-09 13:11:35', '2025-05-09 14:00:00',
+        'FIT-1020', '20250507-131135', '203', '203');

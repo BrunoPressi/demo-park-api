@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-@ToString
+@ToString @Builder
 public class CustomerParkingSpotCreateDto {
 
     @NotBlank(message = "license plate number cannot be empty")

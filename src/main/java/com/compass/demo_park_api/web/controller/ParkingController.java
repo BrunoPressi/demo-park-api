@@ -1,6 +1,7 @@
 package com.compass.demo_park_api.web.controller;
 
 import com.compass.demo_park_api.entity.CustomerParkingSpot;
+import com.compass.demo_park_api.service.CustomerParkingSpotService;
 import com.compass.demo_park_api.service.ParkingService;
 import com.compass.demo_park_api.web.dto.CustomerCreateDto;
 import com.compass.demo_park_api.web.dto.CustomerParkingSpotCreateDto;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,10 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -35,6 +34,7 @@ import java.net.URI;
 public class ParkingController {
 
     private final ParkingService parkingService;
+    private final CustomerParkingSpotService customerParkingSpotService;
 
     @Operation(summary = "Check In resource", description = "Resource to check in to a parking lot. " +
             "Requires authentication with a Bearer Token. Access restricted to the 'ADMIN' profile",
@@ -63,6 +63,25 @@ public class ParkingController {
                 .toUri();
 
         return ResponseEntity.created(location).body(CustomerParkingSpotMapper.toDto(customerParkingSpot));
+    }
+
+    @Operation(summary = "Find a customer parking spot by receipt", description = "Request requires authentication by Bearer Token." +
+            "Restricted to a 'ADMIN' profile",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerParkingSpotResponseDto.class))),
+                @ApiResponse(responseCode = "404", description = "Not found or checkout already completed",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @GetMapping("/checkIn/{receipt}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    public ResponseEntity<CustomerParkingSpotResponseDto> findByReceipt(@PathVariable String receipt) {
+
+        CustomerParkingSpot customerParkingSpot= customerParkingSpotService.findByReceipt(receipt);
+
+        return ResponseEntity.ok().body(CustomerParkingSpotMapper.toDto(customerParkingSpot));
+
     }
 
 }

@@ -106,6 +106,16 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
 
+    @ExceptionHandler(ReceiptNotFoundException.class)
+    public ResponseEntity<ErrorMessage> receiptNotFoundException(HttpServletRequest request,
+                                                              ReceiptNotFoundException e) {
+
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
     @ExceptionHandler(PasswordInvalidException.class)
     public ResponseEntity<ErrorMessage> passwordInvalidException(HttpServletRequest request,
                                                                  PasswordInvalidException e) {
