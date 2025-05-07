@@ -15,6 +15,8 @@ public class ParkingUtils {
     private static final double FIRST_60_MINUTES = 9.25;
     private static final double ADDITIONAL_15_MINUTES = 1.75;
 
+    private static final double PERCENTAGE_DISCOUNT = 0.30;
+
     // 2025-05-06-T14:23:15.616463500
     // 20250506-142315
     public static String generateReceipt() {
@@ -48,6 +50,21 @@ public class ParkingUtils {
         }
 
         return new BigDecimal(total).setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public static BigDecimal calculateDiscount(BigDecimal cost, long numberOfTimes) {
+
+
+        BigDecimal discount = null;
+
+        if (numberOfTimes % 10 == 0 && numberOfTimes >= 10) {
+            discount = cost.multiply(BigDecimal.valueOf(PERCENTAGE_DISCOUNT));
+        }
+        else {
+            discount = BigDecimal.valueOf(0.00);
+        }
+
+        return discount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
 }
