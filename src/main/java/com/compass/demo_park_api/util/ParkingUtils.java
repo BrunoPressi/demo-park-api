@@ -28,6 +28,26 @@ public class ParkingUtils {
                 .replace("T", "-");
     }
 
+    public static BigDecimal calculateTotalValue(LocalDateTime entry, LocalDateTime exit) {
+        long minutes = entry.until(exit, ChronoUnit.MINUTES);
+        double total = 0.0;
 
+        if (minutes <= 15) {
+
+            total = FIRST_15_MINUTES;
+
+        } else if (minutes <= 60) {
+
+            total = FIRST_60_MINUTES;
+
+        } else {
+
+            double tempoExtra = (double) (minutes - 60) / 15;
+            total = FIRST_60_MINUTES + (ADDITIONAL_15_MINUTES * Math.ceil(tempoExtra));
+
+        }
+
+        return new BigDecimal(total).setScale(2, RoundingMode.HALF_EVEN);
+    }
 
 }
