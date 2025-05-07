@@ -25,4 +25,9 @@ public class CustomerParkingSpotService {
                 .orElseThrow( () -> new ReceiptNotFoundException(String.format("Receipt '%s' not found or checkout already completed", receipt)));
     }
 
+    @Transactional(readOnly = true)
+    public long getTotalTimesFullParking(String cpf) {
+        return customerParkingSpotRepository.countByCustomerCpfAndExitDateIsNotNull(cpf);
+    }
+
 }
