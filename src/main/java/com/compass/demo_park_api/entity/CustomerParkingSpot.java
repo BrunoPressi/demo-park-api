@@ -48,7 +48,7 @@ public class CustomerParkingSpot implements Serializable {
     @Column(name = "exit_date", nullable = true)
     private LocalDateTime exitDate;
 
-    @Column(name = "value", nullable = true, columnDefinition = "decimal(7,2)")
+    @Column(name = "total_value", nullable = true, columnDefinition = "decimal(7,2)")
     private BigDecimal value;
 
     @Column(name = "discount", nullable = true, columnDefinition = "decimal(7,2)")
@@ -59,7 +59,7 @@ public class CustomerParkingSpot implements Serializable {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "parkiking_spot_id", nullable = false)
+    @JoinColumn(name = "parking_spot_id", nullable = false)
     private ParkingSpot parkingSpot;
 
     @Column(name = "date_creation")

@@ -25,7 +25,7 @@ public class CustomerParkingSpotResponseDto {
     private String parkingSpotCode;
     private String receipt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime entryDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
