@@ -7,6 +7,7 @@ import com.compass.demo_park_api.exception.ReceiptNotFoundException;
 import com.compass.demo_park_api.repository.CustomerParkingSpotRepository;
 import com.compass.demo_park_api.repository.CustomerRepository;
 import com.compass.demo_park_api.repository.projection.ParkingProjection;
+import com.compass.demo_park_api.web.dto.CustomerParkingSpotResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,11 +40,17 @@ public class CustomerParkingSpotService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ParkingProjection> findAllByCustomerCpf(String cpf, Pageable pageable) {
+    public Page<ParkingProjection> findAllParkingsByCustomerCpf(String cpf, Pageable pageable) {
 
         customerRepository.findByCpf(cpf).orElseThrow( () ->
                 new CpfNotFoundException(String.format("Cpf %s not found", cpf)));
 
         return customerParkingSpotRepository.findByCustomerCpfAndExitDateIsNotNull(cpf, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ParkingProjection> findAllParkingsByCustomerId(Long id, Pageable pageable) {
+        return customerParkingSpotRepository.findByCustomerUserIdAndExitDateIsNotNull(id, pageable);
+    }
+
 }

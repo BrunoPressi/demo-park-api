@@ -16,4 +16,6 @@ public interface CustomerParkingSpotRepository extends JpaRepository<CustomerPar
     long countByCustomerCpfAndExitDateIsNotNull(String cpf);
 
     Page<ParkingProjection> findByCustomerCpfAndExitDateIsNotNull(String cpf, Pageable pageable);
+
+    Page<ParkingProjection> findByCustomerUserIdAndExitDateIsNotNull(Long id, Pageable pageable);
 }

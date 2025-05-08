@@ -1,6 +1,7 @@
 package com.compass.demo_park_api.web.controller;
 
 import com.compass.demo_park_api.entity.CustomerParkingSpot;
+import com.compass.demo_park_api.jwt.JwtUserDetails;
 import com.compass.demo_park_api.repository.projection.ParkingProjection;
 import com.compass.demo_park_api.service.CustomerParkingSpotService;
 import com.compass.demo_park_api.service.ParkingService;
@@ -31,6 +32,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -140,12 +142,41 @@ public class ParkingController {
                 @ApiResponse(responseCode = "404", description = "Cpf not found",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             })
-    @GetMapping("/{cpf}")
+    @GetMapping("/cpf/{cpf}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageableDto> findAllByCpf(@PathVariable String cpf
+    public ResponseEntity<PageableDto> findAllParkingsByCpf(@PathVariable String cpf
             ,@Parameter(hidden = true) @PageableDefault(size = 5, sort = "entryDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<ParkingProjection> list = customerParkingSpotService.findAllByCustomerCpf(cpf, pageable);
+        Page<ParkingProjection> list = customerParkingSpotService.findAllParkingsByCustomerCpf(cpf, pageable);
+
+        return ResponseEntity.ok().body(PageableMapper.toDto(list));
+    }
+
+    @Operation(summary = "Find all parking's by a customer ID", description = "Request required authentication by a Bearer Token." +
+            "Access restricted to 'CUSTOMER' profile",
+            security = @SecurityRequirement(name = "security"),
+            parameters = {
+                @Parameter(in = ParameterIn.QUERY, name = "page",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "0")),
+                        description = "Represents the returned page"),
+                @Parameter(in = ParameterIn.QUERY, name = "size",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "20")),
+                        description = "Represents the total number of elements per page"),
+                @Parameter(in = ParameterIn.QUERY, name = "sort", hidden = true,
+                        content = @Content(schema = @Schema(type = "string", defaultValue = "id,asc")),
+                        description = "Represents the ordering of the results")
+            },
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerParkingSpotResponseDto.class)))),
+                @ApiResponse(responseCode = "403", description = "Access denied to admin profile",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<PageableDto> getAllParkingsByCustomerId(@Parameter(hidden = true) @PageableDefault(size = 5, sort = "entryDate", direction = Sort.Direction.ASC) @AuthenticationPrincipal JwtUserDetails user, Pageable pageable) {
+
+        Page<ParkingProjection> list = customerParkingSpotService.findAllParkingsByCustomerId(user.getId(), pageable);
 
         return ResponseEntity.ok().body(PageableMapper.toDto(list));
     }
