@@ -1,15 +1,21 @@
 package com.compass.demo_park_api.web.controller;
 
 import com.compass.demo_park_api.entity.CustomerParkingSpot;
+import com.compass.demo_park_api.repository.projection.ParkingProjection;
 import com.compass.demo_park_api.service.CustomerParkingSpotService;
 import com.compass.demo_park_api.service.ParkingService;
 import com.compass.demo_park_api.web.dto.CustomerCreateDto;
 import com.compass.demo_park_api.web.dto.CustomerParkingSpotCreateDto;
 import com.compass.demo_park_api.web.dto.CustomerParkingSpotResponseDto;
+import com.compass.demo_park_api.web.dto.PageableDto;
 import com.compass.demo_park_api.web.dto.mapper.CustomerParkingSpotMapper;
+import com.compass.demo_park_api.web.dto.mapper.PageableMapper;
 import com.compass.demo_park_api.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +24,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "Parking Resource", description = "Operations related to the parking feature")
 @RestController
@@ -103,6 +114,38 @@ public class ParkingController {
 
         return ResponseEntity.ok().body(CustomerParkingSpotMapper.toDto(customerParkingSpot));
 
+    }
+
+    @Operation(summary = "Find all parking's by customer CPF", description = "Request requires authentication by a Bearer Token." +
+            "Access restricted a 'ADMIN' profile.",
+            security = @SecurityRequirement(name = "security"),
+            parameters = {
+                @Parameter(in = ParameterIn.QUERY, name = "page",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "0")),
+                        description = "Represents the returned page"),
+                @Parameter(in = ParameterIn.QUERY, name = "size",
+                        content = @Content(schema = @Schema(type = "integer", defaultValue = "20")),
+                        description = "Represents the total number of elements per page"),
+                @Parameter(in = ParameterIn.QUERY, name = "sort", hidden = true,
+                        content = @Content(schema = @Schema(type = "string", defaultValue = "id,asc")),
+                        description = "Represents the ordering of the results")
+            },
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerParkingSpotResponseDto.class)))),
+                @ApiResponse(responseCode = "404", description = "Cpf not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                @ApiResponse(responseCode = "403", description = "Access denied",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @GetMapping("/{cpf}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PageableDto> findAllByCpf(@PathVariable String cpf
+            ,@Parameter(hidden = true) @PageableDefault(size = 5, sort = "entryDate", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        Page<ParkingProjection> list = customerParkingSpotService.findAllByCustomerCpf(cpf, pageable);
+
+        return ResponseEntity.ok().body(PageableMapper.toDto(list));
     }
 
 }
