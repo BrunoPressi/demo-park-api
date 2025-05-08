@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/parking/parking-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/sql/parking/parking-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -331,4 +333,52 @@ public class ParkingIT {
 
     }
 
+    @Test
+    public void findAllParkingsByCustomerCpf_withAdminProfileAndExistsCpf_returnListCustomerResponseDtoWithStatus200() {
+
+        List<CustomerParkingSpotResponseDto> responseBody = testClient
+            .get()
+            .uri("/api/v1/parking/60639545033")
+            .headers(JwtAuthentication.getHeaderAuthorization(testClient, "mario@gmail.com", "123456"))
+            .exchange()
+            .expectStatus().isOk()
+            .expectBodyList(CustomerParkingSpotResponseDto.class)
+            .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody).size().isEqualTo(1);
+
+    }
+
+    @Test
+    public void findAllParkingsByCustomerCpf_withAdminProfileAndNonExistsCpf_returnErrorMessageWithStatus404() {
+
+         testClient
+            .get()
+            .uri("/api/v1/parking/36686307041")
+            .headers(JwtAuthentication.getHeaderAuthorization(testClient, "mario@gmail.com", "123456"))
+            .exchange()
+            .expectStatus().isNotFound()
+            .expectBody()
+             .jsonPath("method").isEqualTo("GET")
+             .jsonPath("status").isEqualTo(404)
+             .jsonPath("path").isEqualTo("/api/v1/parking/36686307041");
+
+    }
+
+    @Test
+    public void findAllParkingsByCustomerCpf_withCustomerProfile_returnErrorMessageWithStatus403() {
+
+        testClient
+                .get()
+                .uri("/api/v1/parking/60639545033")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "jim@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("method").isEqualTo("GET")
+                .jsonPath("status").isEqualTo(403)
+                .jsonPath("path").isEqualTo("/api/v1/parking/60639545033");
+
+    }
 }

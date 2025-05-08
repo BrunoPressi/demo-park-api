@@ -140,7 +140,7 @@ public class ParkingController {
             })
     @GetMapping("/{cpf}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageableDto> findAllByCpf(@PathVariable String cpf
+    public ResponseEntity<PageableDto> findAllParkingsByCustomerCpf(@PathVariable String cpf
             ,@Parameter(hidden = true) @PageableDefault(size = 5, sort = "entryDate", direction = Sort.Direction.ASC) Pageable pageable) {
 
         Page<ParkingProjection> list = customerParkingSpotService.findAllByCustomerCpf(cpf, pageable);
