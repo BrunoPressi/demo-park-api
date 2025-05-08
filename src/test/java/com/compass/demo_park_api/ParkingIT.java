@@ -22,7 +22,7 @@ public class ParkingIT {
     WebTestClient testClient;
 
     @Test
-    public void createCustomerParkingSpot_withAdminProfileAndValidData_returnCustomerParkingSpotResponseDtoWithStatus201() {
+    public void checkIn_withAdminProfileAndValidData_returnCustomerParkingSpotResponseDtoWithStatus201() {
 
         CustomerParkingSpotCreateDto dto = CustomerParkingSpotCreateDto.builder()
                 .carModel("Vectra 2.0")
@@ -54,7 +54,7 @@ public class ParkingIT {
     }
 
     @Test
-    public void createCustomerParkingSpot_withCustomerProfileAndValidData_returnErrorMessageWithStatus403() {
+    public void checkIn_withCustomerProfileAndValidData_returnErrorMessageWithStatus403() {
 
         CustomerParkingSpotCreateDto dto = CustomerParkingSpotCreateDto.builder()
                 .carModel("Vectra 2.0")
@@ -80,7 +80,7 @@ public class ParkingIT {
     }
 
     @Test
-    public void createCustomerParkingSpot_withInvalidData_returnErrorMessageWithStatus422() {
+    public void checkIn_withInvalidData_returnErrorMessageWithStatus422() {
 
         CustomerParkingSpotCreateDto dto1 = CustomerParkingSpotCreateDto.builder()
             .carModel("Vectra 2.0")
@@ -129,7 +129,7 @@ public class ParkingIT {
     }
 
     @Test
-    public void createCustomerParkingSpot_withNonExistsCpf_returnErrorMessageWithStatus404() {
+    public void checkIn_withNonExistsCpf_returnErrorMessageWithStatus404() {
 
         CustomerParkingSpotCreateDto dto = CustomerParkingSpotCreateDto.builder()
                 .carModel("Vectra 2.0")
@@ -157,7 +157,7 @@ public class ParkingIT {
     @Sql(scripts = "/sql/parking/parking-occupied-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "/sql/parking/parking-occupied-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    public void createCustomerParkingSpot_withOccupiedSpots_returnErrorMessageWithStatus404() {
+    public void checkIn_returnErrorMessageWithStatus404() {
 
         CustomerParkingSpotCreateDto dto = CustomerParkingSpotCreateDto.builder()
                 .carModel("Vectra 2.0")
@@ -252,6 +252,82 @@ public class ParkingIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+
+    }
+
+    @Sql(scripts = "/sql/parking/parking-occupied-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/parking/parking-occupied-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    public void checkOut_withAdminProfileAndExistsReceipt_returnCustomerResponseDtoWithStatus200() {
+
+        testClient
+                .put()
+                .uri("/api/v1/parking/checkOut/20250507-131109")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "mario@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("receipt").isEqualTo("20250507-131109")
+                .jsonPath("customerCpf").isEqualTo("60639545033")
+                .jsonPath("licensePlateNumber").isEqualTo("FIT-1020")
+                .jsonPath("entryDate").isEqualTo("2025-05-07 13:11:00")
+                .jsonPath("parkingSpotCode").isEqualTo("A-04")
+                .jsonPath("carBrand").isEqualTo("Chevrolet")
+                .jsonPath("carModel").isEqualTo("Vectra 2.0")
+                .jsonPath("carColor").isEqualTo("Black")
+                .jsonPath("exitDate").exists()
+                .jsonPath("value").exists()
+                .jsonPath("discount").exists();
+
+    }
+
+    @Test
+    public void checkOut_withAdminProfileAndNonExistsReceipt_returnErrorMessageWithStatus404() {
+
+        testClient
+                .put()
+                .uri("/api/v1/parking/checkOut/20250507-131102")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "mario@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("path").isEqualTo("/api/v1/parking/checkOut/20250507-131102")
+                .jsonPath("method").isEqualTo("PUT")
+                .jsonPath("status").isEqualTo(404);
+
+    }
+
+    @Sql(scripts = "/sql/parking/parking-occupied-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/parking/parking-occupied-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    public void checkOut_withAdminProfileAndCheckOutAlreadyDone_returnErrorMessageWithStatus404() {
+
+        testClient
+                .put()
+                .uri("/api/v1/parking/checkOut/20250507-141109")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "mario@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("path").isEqualTo("/api/v1/parking/checkOut/20250507-141109")
+                .jsonPath("method").isEqualTo("PUT")
+                .jsonPath("status").isEqualTo(404);
+
+    }
+
+    @Test
+    public void checkOut_withCustomerProfile_returnErrorMessageWithStatus403() {
+
+        testClient
+                .put()
+                .uri("/api/v1/parking/checkOut/20250507-131103")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "max@gmail.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("method").isEqualTo("PUT")
+                .jsonPath("status").isEqualTo(403)
+                .jsonPath("path").isEqualTo("/api/v1/parking/checkOut/20250507-131103");
 
     }
 
