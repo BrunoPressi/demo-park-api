@@ -120,6 +120,8 @@ public class ParkingController {
             "Access restricted a 'ADMIN' profile.",
             security = @SecurityRequirement(name = "security"),
             parameters = {
+                @Parameter(in = ParameterIn.QUERY, name = "cpf", description = "Customer CPF number",
+                        required = true),
                 @Parameter(in = ParameterIn.QUERY, name = "page",
                         content = @Content(schema = @Schema(type = "integer", defaultValue = "0")),
                         description = "Represents the returned page"),
@@ -133,10 +135,10 @@ public class ParkingController {
             responses = {
                 @ApiResponse(responseCode = "200", description = "Success",
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerParkingSpotResponseDto.class)))),
-                @ApiResponse(responseCode = "404", description = "Cpf not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                 @ApiResponse(responseCode = "403", description = "Access denied",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                @ApiResponse(responseCode = "404", description = "Cpf not found",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             })
     @GetMapping("/{cpf}")
     @PreAuthorize("hasRole('ADMIN')")

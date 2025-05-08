@@ -49,11 +49,35 @@ insert into customer_parking_spot
  license_plate_number, number_receipt, customer_id, parking_spot_id, exit_date, total_value, discount)
 values (505, 'Chevrolet', 'Black',
         'Vectra 2.0', '2025-05-07 14:11:00',
-        'FIT-1020', '20250507-141109',
+        'FIT-1020', '20250507-141110',
         '203', '204', '2025-05-07 15:11:00', 9.25, 0);
 
 insert into customer_parking_spot
+(id, car_brand, car_color, car_model, entry_date,
+ license_plate_number, number_receipt, customer_id, parking_spot_id, exit_date, total_value, discount)
+values (509, 'Chevrolet', 'Black',
+        'Vectra 2.0', '2025-05-07 14:11:00',
+        'FIT-1020', '20250507-141114',
+        '203', '204', '2025-05-07 15:11:00', 9.25, 0);
+
+insert into customer_parking_spot
+(id, car_brand, car_color, car_model, entry_date,
+ license_plate_number, number_receipt, customer_id, parking_spot_id, exit_date, total_value, discount)
+values (515, 'Chevrolet', 'Black',
+        'Vectra 2.0', '2025-05-07 15:11:00',
+        'FIT-1020', '20250507-151109',
+        '203', '204', '2025-05-07 16:11:00', 9.25, 0);
+
+insert into customer_parking_spot
+(id, car_brand, car_color, car_model, entry_date,
+ license_plate_number, number_receipt, customer_id, parking_spot_id, exit_date, total_value, discount)
+values (550, 'Chevrolet', 'Black',
+        'Vectra 2.0', '2025-05-07 16:11:00',
+        'FIT-1020', '20250507-161109',
+        '203', '204', '2025-05-07 16:11:00', 9.25, 0);
+
+insert into customer_parking_spot
 (id, car_brand, car_color, car_model, entry_date, license_plate_number, number_receipt, customer_id, parking_spot_id)
-values (504, 'Chevrolet', 'Black',
+values (540, 'Chevrolet', 'Black',
         'Vectra 2.0', '2025-05-07 13:11:00',
         'FIT-1020', '20250507-131103', '203', '205');
