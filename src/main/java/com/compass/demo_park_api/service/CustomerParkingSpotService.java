@@ -49,7 +49,7 @@ public class CustomerParkingSpotService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ParkingProjection> findAllParkingsByCustomerId(Long id, Pageable pageable) {
+    public Page<ParkingProjection> findAllParkingsByCustomerUserId(Long id, Pageable pageable) {
         return customerParkingSpotRepository.findByCustomerUserIdAndExitDateIsNotNull(id, pageable);
     }
 
