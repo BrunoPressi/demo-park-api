@@ -188,6 +188,15 @@ public class ParkingController {
         return ResponseEntity.ok().body(PageableMapper.toDto(list));
     }
 
+    @Operation(summary = "Get parking report", description = "Resource to get a parking report." +
+            "Request requires authentication by a Bearer Token. Restricted to 'CUSTOMER' profile",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary"))),
+                @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            })
     @GetMapping("/report")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Void> getReport(HttpServletResponse response, @AuthenticationPrincipal JwtUserDetails user) throws IOException {
