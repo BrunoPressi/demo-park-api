@@ -10,7 +10,7 @@ public class SpringTimeZoneConfig {
 
     @PostConstruct
     public void timeZoneConfig() {
-        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
     }
 
 }
