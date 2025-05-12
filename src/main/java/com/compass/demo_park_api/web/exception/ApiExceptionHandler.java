@@ -29,7 +29,7 @@ public class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Invalid Field(s)", result, messageSource));
+                .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, messageSource.getMessage("message.invalid.field", null, request.getLocale()), result, messageSource));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -66,10 +66,12 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> codeUniqueViolationException(HttpServletRequest request,
                                                                      CodeUniqueViolationException e) {
 
+        String message = messageSource.getMessage("exception.codeUniqueViolationException", new Object[]{e.getCode()}, request.getLocale());
+
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, message));
 
     }
 
@@ -107,10 +109,24 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> codeNotFoundException(HttpServletRequest request,
                                                               CodeNotFoundException e) {
 
+        String message = messageSource.getMessage("exception.codeNotFoundException", new Object[]{e.getCode()}, request.getLocale());
+
         return  ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, message));
+    }
+
+    @ExceptionHandler(NoVacancyException.class)
+    public ResponseEntity<ErrorMessage> noVacancyException(HttpServletRequest request,
+                                                              NoVacancyException e) {
+
+        String message = messageSource.getMessage("exception.noVacancyException", null, request.getLocale());
+
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, message));
     }
 
     @ExceptionHandler(ReceiptNotFoundException.class)

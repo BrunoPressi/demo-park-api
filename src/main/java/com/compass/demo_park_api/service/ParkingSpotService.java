@@ -3,6 +3,7 @@ package com.compass.demo_park_api.service;
 import com.compass.demo_park_api.entity.ParkingSpot;
 import com.compass.demo_park_api.exception.CodeNotFoundException;
 import com.compass.demo_park_api.exception.CodeUniqueViolationException;
+import com.compass.demo_park_api.exception.NoVacancyException;
 import com.compass.demo_park_api.exception.UserNotFoundException;
 import com.compass.demo_park_api.repository.ParkingSpotRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class ParkingSpotService {
             parkingSpotRepository.save(parkingSpot);
         }
         catch (DataIntegrityViolationException e) {
-            throw new CodeUniqueViolationException(String.format("Parking spot %s already exists!", parkingSpot.getCode()));
+            throw new CodeUniqueViolationException(parkingSpot.getCode());
         }
     }
 
@@ -34,7 +35,7 @@ public class ParkingSpotService {
     public ParkingSpot findByCode(String code) {
 
         return parkingSpotRepository.findByCode(code).orElseThrow(
-                () -> new CodeNotFoundException(String.format("Code '%s' not found", code))
+                () -> new CodeNotFoundException(code)
         );
 
     }
@@ -42,6 +43,6 @@ public class ParkingSpotService {
     @Transactional(readOnly = true)
     public ParkingSpot findFreeParkingSpot() {
         return parkingSpotRepository.findFirstByStatus(FREE)
-                .orElseThrow( () -> new CodeNotFoundException("No vacancies found"));
+                .orElseThrow( () -> new NoVacancyException());
     }
 }
