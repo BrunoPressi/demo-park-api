@@ -133,10 +133,12 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> receiptNotFoundException(HttpServletRequest request,
                                                               ReceiptNotFoundException e) {
 
+        String message = messageSource.getMessage("exception.receiptNotFoundException", null, request.getLocale());
+
         return  ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, message));
     }
 
     @ExceptionHandler(PasswordInvalidException.class)

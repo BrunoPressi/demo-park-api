@@ -31,7 +31,7 @@ public class CustomerParkingSpotService {
     @Transactional(readOnly = true)
     public CustomerParkingSpot findByReceipt(String receipt) {
         return customerParkingSpotRepository.findByReceiptAndExitDateIsNull(receipt)
-                .orElseThrow( () -> new ReceiptNotFoundException(String.format("Receipt '%s' not found or checkout already completed", receipt)));
+                .orElseThrow( () -> new ReceiptNotFoundException(receipt));
     }
 
     @Transactional(readOnly = true)
