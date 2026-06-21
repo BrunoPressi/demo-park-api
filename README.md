@@ -81,6 +81,248 @@ Authorization: Bearer SEU_TOKEN_AQUI
 - `GET /api/v1/parking/{receipt}`
 - `GET /api/v1/parking/report`
 
+## Exemplos de requests e responses
+
+### 1) Autenticação
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "jose@gmail.com",
+    "password": "123456"
+  }'
+```
+
+**Response 200**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+**Response 400**
+
+```json
+{
+  "status": 400,
+  "message": "Invalid credentials",
+  "path": "/api/v1/auth",
+  "method": "POST"
+}
+```
+
+### 2) Criar usuário
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "ana@gmail.com",
+    "password": "123456"
+  }'
+```
+
+**Response 201**
+
+```json
+{
+  "id": 101,
+  "username": "ana@gmail.com",
+  "role": "ROLE_CUSTOMER"
+}
+```
+
+**Response 409**
+
+```json
+{
+  "status": 409,
+  "message": "User already exists",
+  "path": "/api/v1/users",
+  "method": "POST"
+}
+```
+
+### 3) Consultar usuário por ID
+
+**Request**
+
+```bash
+curl -X GET http://localhost:8080/api/v1/users/100 \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
+
+**Response 200**
+
+```json
+{
+  "id": 100,
+  "username": "jose@gmail.com",
+  "role": "ROLE_ADMIN"
+}
+```
+
+**Response 404**
+
+```json
+{
+  "status": 404,
+  "message": "User not found",
+  "path": "/api/v1/users/0",
+  "method": "GET"
+}
+```
+
+### 4) Criar vaga de estacionamento
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/parking-spot \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "A-10",
+    "status": "FREE"
+  }'
+```
+
+**Response 201**
+
+Headers:
+
+```http
+Location: http://localhost:8080/api/v1/parking-spot/A-10
+```
+
+**Response 409**
+
+```json
+{
+  "status": 409,
+  "message": "Parking Spot with code A-01 has already been registered.",
+  "path": "/api/v1/parking-spot",
+  "method": "POST"
+}
+```
+
+### 5) Criar cliente
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/customers \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cpf": "60639545033",
+    "name": "Maria Silva"
+  }'
+```
+
+**Response 200**
+
+```json
+{
+  "id": 203,
+  "cpf": "60639545033",
+  "name": "Maria Silva"
+}
+```
+
+### 6) Check-in no estacionamento
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/parking/checkIn \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "carModel": "Vectra 2.0",
+    "carBrand": "Chevrolet",
+    "licensePlateNumber": "ABC-0000",
+    "carColor": "WHITE",
+    "customerCpf": "60639545033"
+  }'
+```
+
+**Response 201**
+
+```json
+{
+  "receipt": "20250507-131100",
+  "entryDate": "2025-05-07T13:11:00",
+  "parkingSpot": {
+    "code": "A-01"
+  },
+  "customer": {
+    "cpf": "60639545033"
+  }
+}
+```
+
+**Response 404**
+
+```json
+{
+  "status": 404,
+  "message": "Cpf or vacancy not found",
+  "path": "/api/v1/parking/checkIn",
+  "method": "POST"
+}
+```
+
+### 7) Consultar check-in por receipt
+
+**Request**
+
+```bash
+curl -X GET http://localhost:8080/api/v1/parking/checkIn/20250507-131100 \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
+
+**Response 200**
+
+```json
+{
+  "receipt": "20250507-131100",
+  "licensePlateNumber": "ABC-0000",
+  "carModel": "Vectra 2.0",
+  "carBrand": "Chevrolet",
+  "carColor": "WHITE"
+}
+```
+
+### 8) Check-out
+
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/parking/checkOut \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "receipt": "20250507-131100"
+  }'
+```
+
+**Response 200**
+
+```json
+{
+  "receipt": "20250507-131100",
+  "invoice": 25.0,
+  "exitDate": "2025-05-07T15:45:00"
+}
+```
+
 ## Documentação da API
 
 Após subir a aplicação, acesse:
